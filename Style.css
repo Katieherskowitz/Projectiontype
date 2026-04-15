@@ -1,0 +1,23 @@
+}
+.stage-wrap {
+  border: 1px solid #2e3148;
+  background: #04050b;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 14px 50px rgba(0, 0, 0, 0.45);
+}
+canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.status-panel {
+  color: #b8bdd6;
+  font-size: 0.95rem;
+}
+.status-panel p {
+  margin: 0.1rem 0;
+}
+.hint {
+  opacity: 0.8;
+}
