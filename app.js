@@ -24,6 +24,7 @@ let isRecording = false;
 let finalizedTranscript = '';
 let interimTranscript = '';
 let lastNegativeText = '';
+let lastPositiveText = '';
 let canGenerateDesign = false;
 let designReady = false;
 let hasStoppedAtLeastOnce = false;
@@ -64,6 +65,55 @@ const toNegativeMap = {
   kind: 'cruel'
 };
 
+const toPositiveMap = {
+  hate: 'love',
+  hated: 'loved',
+  sad: 'hopeful',
+  miserable: 'joyful',
+  misery: 'joy',
+  grim: 'bright',
+  awful: 'great',
+  terrible: 'wonderful',
+  horrible: 'amazing',
+  failure: 'success',
+  broken: 'strong',
+  doomed: 'safe',
+  chaos: 'peace',
+  anxious: 'calm',
+  despair: 'hope',
+  hopeless: 'hopeful',
+  bleak: 'bright',
+  ruin: 'build',
+  collapse: 'rise',
+  damage: 'improve',
+  doubt: 'trust',
+  cruel: 'kind',
+  despise: 'love',
+  resent: 'appreciate'
+};
+
+const negativeFallbackWords = [
+  'grim',
+  'broken',
+  'bleak',
+  'harsh',
+  'hollow',
+  'cold',
+  'doomed',
+  'bitter'
+];
+
+const positiveFallbackWords = [
+  'bright',
+  'hopeful',
+  'strong',
+  'warm',
+  'steady',
+  'kind',
+  'uplifted',
+  'alive'
+];
+
 function setStatus(text) {
   statusText.textContent = text.toUpperCase();
 }
@@ -85,8 +135,34 @@ function replaceFromMap(input, map) {
   });
 }
 
+function hashWord(word) {
+  let hash = 0;
+  for (let i = 0; i < word.length; i += 1) {
+    hash = (hash * 31 + word.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+function getFallbackWord(sourceWord, pool) {
+  const idx = hashWord(sourceWord.toLowerCase()) % pool.length;
+  return pool[idx];
+}
+
+function transformEveryWord(input, map, fallbackPool) {
+  return input.replace(/\b[a-z']+\b/gi, (word) => {
+    const mapped = map[word.toLowerCase()] || getFallbackWord(word, fallbackPool);
+    return preserveCase(word, mapped);
+  });
+}
+
 function buildNegativeText(text) {
-  const mapped = replaceFromMap(text, toNegativeMap).trim();
+  const mapped = transformEveryWord(text, toNegativeMap, negativeFallbackWords).trim();
+  if (!mapped) return '';
+  return mapped;
+}
+
+function buildPositiveText(text) {
+  const mapped = transformEveryWord(text, toPositiveMap, positiveFallbackWords).trim();
   if (!mapped) return '';
   return mapped;
 }
@@ -156,12 +232,13 @@ function updateOutputs() {
   const fullTranscript = `${finalizedTranscript} ${interimTranscript}`.trim();
 
   const negativeText = fullTranscript ? buildNegativeText(fullTranscript) : '';
-  const positiveText = fullTranscript || '';
+  const positiveText = fullTranscript ? buildPositiveText(fullTranscript) : '';
 
   leftOutput.textContent = formatDisplayText(negativeText, '');
   rightOutput.textContent = formatDisplayText(positiveText, '');
 
   lastNegativeText = negativeText;
+  lastPositiveText = positiveText;
 
   const hasSpeech = Boolean(fullTranscript);
   saveDesignLeftBtn.disabled = !hasSpeech || isRecording;
@@ -258,9 +335,9 @@ function renderSingleSideDesign(text) {
 function saveDesign(side) {
   if (!ensureDesignReady()) return;
   if (side === 'left') {
-    renderSingleSideDesign(finalizedTranscript.trim());
-  } else {
     renderSingleSideDesign(lastNegativeText);
+  } else {
+    renderSingleSideDesign(lastPositiveText);
   }
   canvas.toBlob((blob) => {
     if (!blob) return;
@@ -277,7 +354,9 @@ function saveTranscription(side) {
 
   const isLeft = side === 'left';
   const sectionTitle = isLeft ? '[Left Side]' : '[Right Side]';
-  const sectionText = isLeft ? leftOutput.textContent : formatDisplayText(lastNegativeText, '');
+  const sectionText = isLeft
+    ? formatDisplayText(lastNegativeText, '')
+    : formatDisplayText(lastPositiveText, '');
   const fileName = isLeft ? 'left-transcription.txt' : 'right-transcription.txt';
 
   const lines = ['=== Transcription Export ===', '', sectionTitle, sectionText, ''];
@@ -310,6 +389,7 @@ function startRecognition() {
       finalizedTranscript = '';
       interimTranscript = '';
       lastNegativeText = '';
+      lastPositiveText = '';
       canGenerateDesign = false;
       designReady = false;
       hasStoppedAtLeastOnce = false;
