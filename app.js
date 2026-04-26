@@ -1,7 +1,9 @@
 const startBtn = document.getElementById('startBtn');
 const stopBtn = document.getElementById('stopBtn');
-const saveDesignBtn = document.getElementById('saveDesignBtn');
-const saveTranscriptBtn = document.getElementById('saveTranscriptBtn');
+const saveDesignLeftBtn = document.getElementById('saveLeftDesignBtn');
+const saveDesignRightBtn = document.getElementById('saveRightDesignBtn');
+const saveTranscriptLeftBtn = document.getElementById('saveLeftTranscriptBtn');
+const saveTranscriptRightBtn = document.getElementById('saveRightTranscriptBtn');
 const leftOutput = document.getElementById('leftOutput');
 const rightOutput = document.getElementById('rightOutput');
 const statusText = document.getElementById('statusText');
@@ -71,9 +73,7 @@ function replaceFromMap(input, map) {
 function buildNegativeText(text) {
   const mapped = replaceFromMap(text, toNegativeMap).trim();
   if (!mapped) return '';
-
-  // Keep the transformation anchored to the main question prompt.
-  return `Thinking about what made me feel something today, the darker truth was this: ${mapped}`;
+  return mapped;
 }
 
 function formatDisplayText(text, fallback) {
@@ -114,7 +114,7 @@ function renderCanvas(positiveText, negativeText) {
   const top = 55;
 
   const leftText = formatDisplayText(positiveText, 'PRESS START AND BEGIN SPEAKING.');
-  const rightText = formatDisplayText(negativeText, 'YOUR ALTERED OUTPUT APPEARS HERE.');
+  const rightText = formatDisplayText(negativeText, 'START SPEAKING TO SEE THE SECOND TRANSCRIPT.');
 
   drawWrappedText(
     leftText,
@@ -141,18 +141,21 @@ function updateOutputs() {
   const fullTranscript = `${finalizedTranscript} ${interimTranscript}`.trim();
 
   const positiveText = fullTranscript || 'Press Start and begin speaking.';
-  const negativeText = fullTranscript
-    ? buildNegativeText(fullTranscript)
-    : 'Your altered output appears here.';
+  const negativeText = fullTranscript ? buildNegativeText(fullTranscript) : '';
 
   leftOutput.textContent = formatDisplayText(positiveText, 'Press Start and begin speaking.');
-  rightOutput.textContent = formatDisplayText(negativeText, 'Your altered output appears here.');
+  rightOutput.textContent = formatDisplayText(
+    negativeText,
+    'Start speaking to see the second transcript.'
+  );
 
   lastNegativeText = negativeText;
 
   const hasSpeech = Boolean(fullTranscript);
-  saveDesignBtn.disabled = !hasSpeech || isRecording;
-  saveTranscriptBtn.disabled = !hasSpeech || isRecording;
+  saveDesignLeftBtn.disabled = !hasSpeech || isRecording;
+  saveDesignRightBtn.disabled = !hasSpeech || isRecording;
+  saveTranscriptLeftBtn.disabled = !hasSpeech || isRecording;
+  saveTranscriptRightBtn.disabled = !hasSpeech || isRecording;
 }
 
 function updateControlsVisibility() {
@@ -163,10 +166,14 @@ function updateControlsVisibility() {
     startBtn.disabled = true;
     stopBtn.hidden = false;
     stopBtn.disabled = false;
-    saveDesignBtn.hidden = true;
-    saveDesignBtn.disabled = true;
-    saveTranscriptBtn.hidden = true;
-    saveTranscriptBtn.disabled = true;
+    saveDesignLeftBtn.hidden = true;
+    saveDesignLeftBtn.disabled = true;
+    saveDesignRightBtn.hidden = true;
+    saveDesignRightBtn.disabled = true;
+    saveTranscriptLeftBtn.hidden = true;
+    saveTranscriptLeftBtn.disabled = true;
+    saveTranscriptRightBtn.hidden = true;
+    saveTranscriptRightBtn.disabled = true;
     return;
   }
 
@@ -175,10 +182,15 @@ function updateControlsVisibility() {
   stopBtn.hidden = true;
   stopBtn.disabled = true;
 
-  saveDesignBtn.hidden = !hasSpeech;
-  saveTranscriptBtn.hidden = !hasSpeech;
-  saveDesignBtn.disabled = !hasSpeech;
-  saveTranscriptBtn.disabled = !hasSpeech;
+  saveDesignLeftBtn.hidden = !hasSpeech;
+  saveDesignRightBtn.hidden = !hasSpeech;
+  saveTranscriptLeftBtn.hidden = !hasSpeech;
+  saveTranscriptRightBtn.hidden = !hasSpeech;
+
+  saveDesignLeftBtn.disabled = !hasSpeech;
+  saveDesignRightBtn.disabled = !hasSpeech;
+  saveTranscriptLeftBtn.disabled = !hasSpeech;
+  saveTranscriptRightBtn.disabled = !hasSpeech;
 }
 
 function ensureDesignReady() {
@@ -202,35 +214,50 @@ function downloadBlob(blob, fileName) {
   URL.revokeObjectURL(url);
 }
 
-function saveDesign() {
+function renderSingleSideDesign(text) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  drawWrappedText(
+    formatDisplayText(text, ''),
+    56,
+    95,
+    canvas.width - 112,
+    52,
+    '#d40000',
+    '800 42px Inter, sans-serif'
+  );
+}
+
+function saveDesign(side) {
   if (!ensureDesignReady()) return;
+  if (side === 'left') {
+    renderSingleSideDesign(finalizedTranscript.trim());
+  } else {
+    renderSingleSideDesign(lastNegativeText);
+  }
   canvas.toBlob((blob) => {
     if (!blob) return;
-    downloadBlob(blob, 'voice-design.png');
+    const fileName = side === 'left' ? 'left-design.png' : 'right-design.png';
+    downloadBlob(blob, fileName);
   }, 'image/png');
 }
 
-function saveTranscription() {
+function saveTranscription(side) {
   const cleanTranscript = finalizedTranscript.trim();
   if (!cleanTranscript) return;
   ensureDesignReady();
 
-  const lines = [
-    '=== Transcription Export ===',
-    '',
-    '[Left Side]',
-    leftOutput.textContent,
-    '',
-    '[Right Side]',
-    formatDisplayText(lastNegativeText, ''),
-    '',
-    '[Raw Transcript]',
-    cleanTranscript,
-    ''
-  ];
+  const isLeft = side === 'left';
+  const sectionTitle = isLeft ? '[Left Side]' : '[Right Side]';
+  const sectionText = isLeft ? leftOutput.textContent : formatDisplayText(lastNegativeText, '');
+  const fileName = isLeft ? 'left-transcription.txt' : 'right-transcription.txt';
+
+  const lines = ['=== Transcription Export ===', '', sectionTitle, sectionText, ''];
 
   const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
-  downloadBlob(blob, 'voice-transcription.txt');
+  downloadBlob(blob, fileName);
 }
 
 function stopRecognition() {
@@ -300,8 +327,10 @@ function startRecognition() {
 
 startBtn.addEventListener('click', startRecognition);
 stopBtn.addEventListener('click', stopRecognition);
-saveDesignBtn.addEventListener('click', saveDesign);
-saveTranscriptBtn.addEventListener('click', saveTranscription);
+saveDesignLeftBtn.addEventListener('click', () => saveDesign('left'));
+saveDesignRightBtn.addEventListener('click', () => saveDesign('right'));
+saveTranscriptLeftBtn.addEventListener('click', () => saveTranscription('left'));
+saveTranscriptRightBtn.addEventListener('click', () => saveTranscription('right'));
 
 designStage.hidden = true;
 updateControlsVisibility();
