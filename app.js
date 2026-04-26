@@ -64,6 +64,17 @@ const toNegativeMap = {
   kind: 'cruel'
 };
 
+const negativeFallbackWords = [
+  'grim',
+  'broken',
+  'bleak',
+  'harsh',
+  'hollow',
+  'cold',
+  'doomed',
+  'bitter'
+];
+
 function setStatus(text) {
   statusText.textContent = text.toUpperCase();
 }
@@ -85,8 +96,28 @@ function replaceFromMap(input, map) {
   });
 }
 
+function hashWord(word) {
+  let hash = 0;
+  for (let i = 0; i < word.length; i += 1) {
+    hash = (hash * 31 + word.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+function getFallbackWord(sourceWord, pool) {
+  const idx = hashWord(sourceWord.toLowerCase()) % pool.length;
+  return pool[idx];
+}
+
+function transformEveryWord(input, map, fallbackPool) {
+  return input.replace(/\b[a-z']+\b/gi, (word) => {
+    const mapped = map[word.toLowerCase()] || getFallbackWord(word, fallbackPool);
+    return preserveCase(word, mapped);
+  });
+}
+
 function buildNegativeText(text) {
-  const mapped = replaceFromMap(text, toNegativeMap).trim();
+  const mapped = transformEveryWord(text, toNegativeMap, negativeFallbackWords).trim();
   if (!mapped) return '';
   return mapped;
 }
