@@ -22,6 +22,17 @@ let interimTranscript = '';
 let lastNegativeText = '';
 let canGenerateDesign = false;
 let designReady = false;
+let hasStoppedAtLeastOnce = false;
+let questionIndex = 0;
+let stopRequested = false;
+
+const promptQuestions = [
+  'Did anything today make me question or reinforce how I see myself? Why did it have that effect?',
+  'What made you feel something today and why.',
+  "What's something happening in the world today that caught my attention? Why did it stand out?",
+  'Did anything in the world today challenge or support what I believe in? How?',
+  'What moment today stayed with me the longest, and why did it keep echoing in my mind?'
+];
 
 const toNegativeMap = {
   love: 'despise',
@@ -159,7 +170,7 @@ function updateOutputs() {
 }
 
 function updateControlsVisibility() {
-  const hasSpeech = Boolean(finalizedTranscript.trim());
+  const hasSpeech = Boolean(finalizedTranscript.trim()) && hasStoppedAtLeastOnce;
 
   if (isRecording) {
     startBtn.hidden = true;
@@ -262,6 +273,7 @@ function saveTranscription(side) {
 
 function stopRecognition() {
   if (!recognition || !isRecording) return;
+  stopRequested = true;
   recognition.stop();
 }
 
@@ -284,6 +296,8 @@ function startRecognition() {
       lastNegativeText = '';
       canGenerateDesign = false;
       designReady = false;
+      hasStoppedAtLeastOnce = false;
+      stopRequested = false;
       setStatus('Listening...');
       mainQuestion.style.opacity = '0.7';
       designStage.hidden = true;
@@ -316,6 +330,14 @@ function startRecognition() {
       canGenerateDesign = true;
       setStatus('Stopped');
       mainQuestion.style.opacity = '1';
+      if (stopRequested) {
+        hasStoppedAtLeastOnce = true;
+        questionIndex = (questionIndex + 1) % promptQuestions.length;
+        mainQuestion.textContent = promptQuestions[questionIndex];
+      } else {
+        hasStoppedAtLeastOnce = false;
+      }
+      stopRequested = false;
       updateOutputs();
       updateControlsVisibility();
     };

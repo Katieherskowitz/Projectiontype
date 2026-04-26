@@ -83,7 +83,14 @@ body {
 .stop-dot {
   background: #000000;
   border-color: #000000;
-  color: transparent;
+  color: #ffffff;
+}
+
+.mic-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: block;
+  fill: currentColor;
 }
 
 .control-dot {
