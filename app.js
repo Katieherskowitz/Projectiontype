@@ -2,10 +2,11 @@ const startBtn = document.getElementById('startBtn');
 const stopBtn = document.getElementById('stopBtn');
 const saveDesignBtn = document.getElementById('saveDesignBtn');
 const saveTranscriptBtn = document.getElementById('saveTranscriptBtn');
-const positiveOutput = document.getElementById('positiveOutput');
-const negativeOutput = document.getElementById('negativeOutput');
+const leftOutput = document.getElementById('leftOutput');
+const rightOutput = document.getElementById('rightOutput');
 const statusText = document.getElementById('statusText');
-const openingPanel = document.getElementById('openingPanel');
+const mainQuestion = document.getElementById('mainQuestion');
+const designStage = document.getElementById('designStage');
 const canvas = document.getElementById('projectionCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -16,6 +17,8 @@ let isRecording = false;
 let finalizedTranscript = '';
 let interimTranscript = '';
 let lastNegativeText = '';
+let canGenerateDesign = false;
+let designReady = false;
 
 const toNegativeMap = {
   love: 'despise',
@@ -44,7 +47,7 @@ const toNegativeMap = {
 };
 
 function setStatus(text) {
-  statusText.textContent = text;
+  statusText.textContent = text.toUpperCase();
 }
 
 function preserveCase(source, replacement) {
@@ -65,7 +68,11 @@ function replaceFromMap(input, map) {
 }
 
 function buildNegativeText(text) {
-  return replaceFromMap(text, toNegativeMap);
+  const mapped = replaceFromMap(text, toNegativeMap).trim();
+  if (!mapped) return '';
+
+  // Keep the transformation anchored to the main question prompt.
+  return `Thinking about what made me feel something today, the darker truth was this: ${mapped}`;
 }
 
 function formatDisplayText(text, fallback) {
@@ -98,18 +105,15 @@ function drawWrappedText(text, x, y, maxWidth, lineHeight, color, font) {
 function renderCanvas(positiveText, negativeText) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-  gradient.addColorStop(0, '#5b030a');
-  gradient.addColorStop(1, '#120103');
-  ctx.fillStyle = gradient;
+  ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const gutter = 40;
   const colWidth = (canvas.width - gutter * 3) / 2;
-  const top = 40;
+  const top = 55;
 
-  const leftText = formatDisplayText(positiveText, 'Waiting for speech...');
-  const rightText = formatDisplayText(negativeText, 'Waiting for altered speech...');
+  const leftText = formatDisplayText(positiveText, 'PRESS START AND BEGIN SPEAKING.');
+  const rightText = formatDisplayText(negativeText, 'YOUR ALTERED OUTPUT APPEARS HERE.');
 
   drawWrappedText(
     leftText,
@@ -117,7 +121,7 @@ function renderCanvas(positiveText, negativeText) {
     top + 30,
     colWidth - 48,
     44,
-    '#ffffff',
+    '#d40000',
     '800 36px Inter, sans-serif'
   );
 
@@ -127,7 +131,7 @@ function renderCanvas(positiveText, negativeText) {
     top + 30,
     colWidth - 48,
     44,
-    '#ffffff',
+    '#d40000',
     '800 36px Inter, sans-serif'
   );
 }
@@ -140,16 +144,24 @@ function updateOutputs() {
     ? buildNegativeText(fullTranscript)
     : 'Your altered output appears here.';
 
-  positiveOutput.textContent = formatDisplayText(positiveText, 'Press Start and begin speaking.');
-  negativeOutput.textContent = formatDisplayText(negativeText, 'Your altered output appears here.');
+  leftOutput.textContent = formatDisplayText(positiveText, 'Press Start and begin speaking.');
+  rightOutput.textContent = formatDisplayText(negativeText, 'Your altered output appears here.');
 
   lastNegativeText = negativeText;
-
-  renderCanvas(positiveText, negativeText);
 
   const hasSpeech = Boolean(fullTranscript);
   saveDesignBtn.disabled = !hasSpeech;
   saveTranscriptBtn.disabled = !hasSpeech;
+}
+
+function ensureDesignReady() {
+  if (!canGenerateDesign) return false;
+  if (!designReady) {
+    renderCanvas(finalizedTranscript.trim(), lastNegativeText);
+    designReady = true;
+  }
+  designStage.hidden = false;
+  return true;
 }
 
 function downloadBlob(blob, fileName) {
@@ -164,6 +176,7 @@ function downloadBlob(blob, fileName) {
 }
 
 function saveDesign() {
+  if (!ensureDesignReady()) return;
   canvas.toBlob((blob) => {
     if (!blob) return;
     downloadBlob(blob, 'voice-design.png');
@@ -173,12 +186,13 @@ function saveDesign() {
 function saveTranscription() {
   const cleanTranscript = finalizedTranscript.trim();
   if (!cleanTranscript) return;
+  ensureDesignReady();
 
   const lines = [
     '=== Transcription Export ===',
     '',
     '[Left Side]',
-    positiveOutput.textContent,
+    leftOutput.textContent,
     '',
     '[Right Side]',
     formatDisplayText(lastNegativeText, ''),
@@ -211,10 +225,17 @@ function startRecognition() {
 
     recognition.onstart = () => {
       isRecording = true;
+      finalizedTranscript = '';
+      interimTranscript = '';
+      lastNegativeText = '';
+      canGenerateDesign = false;
+      designReady = false;
       setStatus('Listening...');
       startBtn.disabled = true;
       stopBtn.disabled = false;
-      openingPanel.style.opacity = '0.75';
+      mainQuestion.style.opacity = '0.7';
+      designStage.hidden = true;
+      updateOutputs();
     };
 
     recognition.onresult = (event) => {
@@ -239,10 +260,11 @@ function startRecognition() {
     recognition.onend = () => {
       isRecording = false;
       interimTranscript = '';
+      canGenerateDesign = true;
       setStatus('Stopped');
       startBtn.disabled = false;
       stopBtn.disabled = true;
-      openingPanel.style.opacity = '1';
+      mainQuestion.style.opacity = '1';
       updateOutputs();
     };
   }
@@ -256,4 +278,4 @@ stopBtn.addEventListener('click', stopRecognition);
 saveDesignBtn.addEventListener('click', saveDesign);
 saveTranscriptBtn.addEventListener('click', saveTranscription);
 
-renderCanvas('Press Start and begin speaking.', 'Your altered output appears here.');
+designStage.hidden = true;
