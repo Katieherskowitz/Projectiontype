@@ -8,36 +8,23 @@
   </head>
   <body>
     <main class="app-shell">
-      <section class="opening-panel" id="openingPanel">
-        <h1>Before You Speak</h1>
-        <p>
-          Think of one structure in your life that could collapse tonight, then speak as if your
-          words are all that remain after the dust settles.
-        </p>
-      </section>
+      <h1 id="mainQuestion" class="main-question">What made you feel something today and why.</h1>
 
       <section class="control-strip">
         <button id="startBtn" class="btn primary">Start Speaking</button>
         <button id="stopBtn" class="btn danger" disabled>Stop</button>
-        <p class="status-inline"><strong>Status:</strong> <span id="statusText">Idle</span></p>
-      </section>
-
-      <section class="side-modes" aria-label="Dual side outputs">
-        <div id="positiveOutput" class="text-output left-output">
-          PRESS START AND BEGIN SPEAKING.
-        </div>
-        <div id="negativeOutput" class="text-output right-output">
-          YOUR ALTERED OUTPUT APPEARS HERE.
-        </div>
-      </section>
-
-      <section class="stage-wrap">
-        <canvas id="projectionCanvas" width="1280" height="720"></canvas>
-      </section>
-
-      <section class="save-panel">
         <button id="saveDesignBtn" class="btn" disabled>Save as Design</button>
         <button id="saveTranscriptBtn" class="btn" disabled>Save Transcription</button>
+        <p class="status-inline" aria-live="polite"><span id="statusText">IDLE</span></p>
+      </section>
+
+      <section class="flow-columns" aria-label="Two flowing transcript sides">
+        <div id="leftOutput" class="flow-text">START SPEAKING TO SEE THE LIVE TRANSCRIPT.</div>
+        <div id="rightOutput" class="flow-text">THE ALTERED TRANSCRIPT APPEARS HERE.</div>
+      </section>
+
+      <section id="designStage" class="design-stage" hidden>
+        <canvas id="projectionCanvas" width="1280" height="720"></canvas>
       </section>
     </main>
 
