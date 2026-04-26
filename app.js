@@ -4,6 +4,10 @@ const saveDesignLeftBtn = document.getElementById('saveLeftDesignBtn');
 const saveDesignRightBtn = document.getElementById('saveRightDesignBtn');
 const saveTranscriptLeftBtn = document.getElementById('saveLeftTranscriptBtn');
 const saveTranscriptRightBtn = document.getElementById('saveRightTranscriptBtn');
+const saveLeftDesignItem = document.getElementById('saveLeftDesignItem');
+const saveLeftTranscriptItem = document.getElementById('saveLeftTranscriptItem');
+const saveRightDesignItem = document.getElementById('saveRightDesignItem');
+const saveRightTranscriptItem = document.getElementById('saveRightTranscriptItem');
 const leftOutput = document.getElementById('leftOutput');
 const rightOutput = document.getElementById('rightOutput');
 const statusText = document.getElementById('statusText');
@@ -151,11 +155,11 @@ function renderCanvas(positiveText, negativeText) {
 function updateOutputs() {
   const fullTranscript = `${finalizedTranscript} ${interimTranscript}`.trim();
 
-  const positiveText = fullTranscript || '';
   const negativeText = fullTranscript ? buildNegativeText(fullTranscript) : '';
+  const positiveText = fullTranscript || '';
 
-  leftOutput.textContent = formatDisplayText(positiveText, '');
-  rightOutput.textContent = formatDisplayText(negativeText, '');
+  leftOutput.textContent = formatDisplayText(negativeText, '');
+  rightOutput.textContent = formatDisplayText(positiveText, '');
 
   lastNegativeText = negativeText;
 
@@ -176,12 +180,16 @@ function updateControlsVisibility() {
     stopBtn.disabled = false;
     saveDesignLeftBtn.hidden = true;
     saveDesignLeftBtn.disabled = true;
+    saveLeftDesignItem.hidden = true;
     saveDesignRightBtn.hidden = true;
     saveDesignRightBtn.disabled = true;
+    saveRightDesignItem.hidden = true;
     saveTranscriptLeftBtn.hidden = true;
     saveTranscriptLeftBtn.disabled = true;
+    saveLeftTranscriptItem.hidden = true;
     saveTranscriptRightBtn.hidden = true;
     saveTranscriptRightBtn.disabled = true;
+    saveRightTranscriptItem.hidden = true;
     return;
   }
 
@@ -194,6 +202,10 @@ function updateControlsVisibility() {
   saveDesignRightBtn.hidden = !hasSpeech;
   saveTranscriptLeftBtn.hidden = !hasSpeech;
   saveTranscriptRightBtn.hidden = !hasSpeech;
+  saveLeftDesignItem.hidden = !hasSpeech;
+  saveRightDesignItem.hidden = !hasSpeech;
+  saveLeftTranscriptItem.hidden = !hasSpeech;
+  saveRightTranscriptItem.hidden = !hasSpeech;
 
   saveDesignLeftBtn.disabled = !hasSpeech;
   saveDesignRightBtn.disabled = !hasSpeech;
