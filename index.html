@@ -1,15 +1,51 @@
-        </label>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dual Voice Projection</title>
+    <link rel="stylesheet" href="./Style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="opening-panel" id="openingPanel">
+        <h1>Before You Speak</h1>
+        <p>
+          Think of one structure in your life that could collapse tonight, then speak as if your
+          words are all that remain after the dust settles.
+        </p>
       </section>
+
+      <section class="control-strip">
+        <button id="startBtn" class="btn primary">Start Speaking</button>
+        <button id="stopBtn" class="btn danger" disabled>Stop</button>
+        <p class="status-inline"><strong>Status:</strong> <span id="statusText">Idle</span></p>
+      </section>
+
+      <section class="side-modes" aria-label="Positive and negative outputs">
+        <article class="mode-card positive-mode">
+          <h2>Positive Mode</h2>
+          <p class="mode-note">Writes what you say exactly.</p>
+          <div id="positiveOutput" class="text-output">Press Start and begin speaking.</div>
+        </article>
+
+        <article class="mode-card negative-mode">
+          <h2>Negative Mode</h2>
+          <p class="mode-note">Twists your words into a destructive version.</p>
+          <div id="negativeOutput" class="text-output">Your altered output appears here.</div>
+        </article>
+      </section>
+
       <section class="stage-wrap">
         <canvas id="projectionCanvas" width="1280" height="720"></canvas>
       </section>
-      <section class="status-panel">
-        <p><strong>Status:</strong> <span id="statusText">Idle</span></p>
-        <p class="hint">
-          For best results, use Chrome and allow microphone permissions.
-        </p>
+
+      <section class="save-panel">
+        <button id="saveDesignBtn" class="btn" disabled>Save as Design</button>
+        <button id="saveTranscriptBtn" class="btn" disabled>Save Transcription</button>
       </section>
     </main>
+
     <script src="./app.js"></script>
   </body>
 </html>
