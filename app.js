@@ -7,6 +7,7 @@ const rightOutput = document.getElementById('rightOutput');
 const statusText = document.getElementById('statusText');
 const mainQuestion = document.getElementById('mainQuestion');
 const designStage = document.getElementById('designStage');
+const controlRail = document.getElementById('controlRail');
 const canvas = document.getElementById('projectionCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -150,6 +151,32 @@ function updateOutputs() {
   lastNegativeText = negativeText;
 
   const hasSpeech = Boolean(fullTranscript);
+  saveDesignBtn.disabled = !hasSpeech || isRecording;
+  saveTranscriptBtn.disabled = !hasSpeech || isRecording;
+}
+
+function updateControlsVisibility() {
+  const hasSpeech = Boolean(finalizedTranscript.trim());
+
+  if (isRecording) {
+    startBtn.hidden = true;
+    startBtn.disabled = true;
+    stopBtn.hidden = false;
+    stopBtn.disabled = false;
+    saveDesignBtn.hidden = true;
+    saveDesignBtn.disabled = true;
+    saveTranscriptBtn.hidden = true;
+    saveTranscriptBtn.disabled = true;
+    return;
+  }
+
+  startBtn.hidden = false;
+  startBtn.disabled = false;
+  stopBtn.hidden = true;
+  stopBtn.disabled = true;
+
+  saveDesignBtn.hidden = !hasSpeech;
+  saveTranscriptBtn.hidden = !hasSpeech;
   saveDesignBtn.disabled = !hasSpeech;
   saveTranscriptBtn.disabled = !hasSpeech;
 }
@@ -231,11 +258,10 @@ function startRecognition() {
       canGenerateDesign = false;
       designReady = false;
       setStatus('Listening...');
-      startBtn.disabled = true;
-      stopBtn.disabled = false;
       mainQuestion.style.opacity = '0.7';
       designStage.hidden = true;
       updateOutputs();
+      updateControlsVisibility();
     };
 
     recognition.onresult = (event) => {
@@ -262,10 +288,9 @@ function startRecognition() {
       interimTranscript = '';
       canGenerateDesign = true;
       setStatus('Stopped');
-      startBtn.disabled = false;
-      stopBtn.disabled = true;
       mainQuestion.style.opacity = '1';
       updateOutputs();
+      updateControlsVisibility();
     };
   }
 
@@ -279,3 +304,4 @@ saveDesignBtn.addEventListener('click', saveDesign);
 saveTranscriptBtn.addEventListener('click', saveTranscription);
 
 designStage.hidden = true;
+updateControlsVisibility();

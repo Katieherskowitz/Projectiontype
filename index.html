@@ -10,12 +10,28 @@
     <main class="app-shell">
       <h1 id="mainQuestion" class="main-question">What made you feel something today and why.</h1>
 
-      <section class="control-strip">
-        <button id="startBtn" class="btn primary">Start Speaking</button>
-        <button id="stopBtn" class="btn danger" disabled>Stop</button>
-        <button id="saveDesignBtn" class="btn" disabled>Save as Design</button>
-        <button id="saveTranscriptBtn" class="btn" disabled>Save Transcription</button>
-        <p class="status-inline" aria-live="polite"><span id="statusText">IDLE</span></p>
+      <section id="controlRail" class="control-rail" aria-label="Recording controls">
+        <button
+          id="startBtn"
+          class="control-dot start-dot"
+          aria-label="Start speaking"
+          title="Start speaking"
+          type="button"
+        ></button>
+        <button
+          id="stopBtn"
+          class="control-dot stop-dot"
+          aria-label="Stop speaking"
+          title="Stop speaking"
+          type="button"
+          disabled
+          hidden
+        ></button>
+        <button id="saveDesignBtn" class="rail-btn" type="button" disabled hidden>Save Design</button>
+        <button id="saveTranscriptBtn" class="rail-btn" type="button" disabled hidden>
+          Save Transcript
+        </button>
+        <p class="sr-only" aria-live="polite"><span id="statusText">IDLE</span></p>
       </section>
 
       <section class="flow-columns" aria-label="Two flowing transcript sides">
