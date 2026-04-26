@@ -44,8 +44,7 @@ body {
   z-index: 10;
 }
 
-.control-dot,
-.rail-btn {
+.control-dot {
   border: 1px solid var(--accent);
   background: #fff;
   color: var(--accent);
@@ -62,14 +61,12 @@ body {
   justify-content: center;
 }
 
-.control-dot:hover:not(:disabled),
-.rail-btn:hover:not(:disabled) {
+.control-dot:hover:not(:disabled) {
   transform: translateY(-1px);
   background: #fff4f4;
 }
 
-.control-dot:disabled,
-.rail-btn:disabled {
+.control-dot:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
@@ -77,20 +74,13 @@ body {
 .start-dot {
   background: #d30000;
   border-color: #d30000;
-  color: transparent;
+  color: #ffffff;
 }
 
 .stop-dot {
   background: #000000;
   border-color: #000000;
-  color: #ffffff;
-}
-
-.mic-icon {
-  width: 1.15rem;
-  height: 1.15rem;
-  display: block;
-  fill: currentColor;
+  color: transparent;
 }
 
 .control-dot {
@@ -100,16 +90,59 @@ body {
   display: inline-flex;
 }
 
-.rail-btn {
-  min-height: 2.2rem;
-  min-width: 6.7rem;
-  padding: 0.5rem 0.75rem;
+.mic-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: block;
+  fill: currentColor;
+}
+
+.save-rail {
+  position: fixed;
+  top: 5.1rem;
+  display: grid;
+  gap: 0.65rem;
+  z-index: 9;
+}
+
+.left-save-rail {
+  left: 1.25rem;
+}
+
+.right-save-rail {
+  right: 1.25rem;
+}
+
+.save-dot {
+  border: 1px solid var(--accent);
   background: #ffffff;
   color: var(--accent);
-  border-color: var(--accent);
-  font-size: 0.76rem;
+  border-radius: 50%;
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.45rem;
+  font-size: 0.56rem;
   line-height: 1.1;
+  font-weight: 700;
   text-transform: uppercase;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.save-dot:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #fff4f4;
+}
+
+.save-dot:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .sr-only {
@@ -178,6 +211,7 @@ canvas {
 @media (max-width: 900px) {
   .app-shell {
     padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 
   .control-rail {
@@ -188,6 +222,19 @@ canvas {
     justify-content: flex-start;
     overflow-x: auto;
     padding-bottom: 0.4rem;
+  }
+
+  .save-rail {
+    position: static;
+    grid-auto-flow: column;
+    grid-auto-columns: min-content;
+    justify-content: flex-start;
+  }
+
+  .left-save-rail,
+  .right-save-rail {
+    left: auto;
+    right: auto;
   }
 
   .flow-columns {

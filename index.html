@@ -20,7 +20,13 @@
           aria-label="Start speaking"
           title="Start speaking"
           type="button"
-        ></button>
+        >
+          <svg class="mic-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              d="M12 3a3 3 0 0 0-3 3v6a3 3 0 1 0 6 0V6a3 3 0 0 0-3-3zm-5 8a1 1 0 1 0-2 0 7 7 0 0 0 6 6.92V20H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-2.08A7 7 0 0 0 19 11a1 1 0 1 0-2 0 5 5 0 1 1-10 0z"
+            />
+          </svg>
+        </button>
         <button
           id="stopBtn"
           class="control-dot stop-dot"
@@ -29,31 +35,52 @@
           type="button"
           disabled
           hidden
-        >
-          <svg class="mic-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path
-              d="M12 3a3 3 0 0 0-3 3v6a3 3 0 1 0 6 0V6a3 3 0 0 0-3-3zm-5 8a1 1 0 1 0-2 0 7 7 0 0 0 6 6.92V20H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-2.08A7 7 0 0 0 19 11a1 1 0 1 0-2 0 5 5 0 1 1-10 0z"
-            />
-          </svg>
-        </button>
-        <button id="saveLeftDesignBtn" class="rail-btn" type="button" disabled hidden>
-          Save Left Design
-        </button>
-        <button id="saveRightDesignBtn" class="rail-btn" type="button" disabled hidden>
-          Save Right Design
-        </button>
-        <button id="saveLeftTranscriptBtn" class="rail-btn" type="button" disabled hidden>
-          Save Left Transcript
-        </button>
-        <button id="saveRightTranscriptBtn" class="rail-btn" type="button" disabled hidden>
-          Save Right Transcript
-        </button>
+        ></button>
         <p class="sr-only" aria-live="polite"><span id="statusText">IDLE</span></p>
       </section>
 
+      <section id="leftSaveRail" class="save-rail left-save-rail" aria-label="Left side save controls">
+        <button id="saveLeftDesignBtn" class="save-dot" type="button" disabled hidden title="Save left design">
+          LD
+        </button>
+        <button
+          id="saveLeftTranscriptBtn"
+          class="save-dot"
+          type="button"
+          disabled
+          hidden
+          title="Save left transcript"
+        >
+          LT
+        </button>
+      </section>
+
+      <section id="rightSaveRail" class="save-rail right-save-rail" aria-label="Right side save controls">
+        <button
+          id="saveRightDesignBtn"
+          class="save-dot"
+          type="button"
+          disabled
+          hidden
+          title="Save right design"
+        >
+          RD
+        </button>
+        <button
+          id="saveRightTranscriptBtn"
+          class="save-dot"
+          type="button"
+          disabled
+          hidden
+          title="Save right transcript"
+        >
+          RT
+        </button>
+      </section>
+
       <section class="flow-columns" aria-label="Two flowing transcript sides">
-        <div id="leftOutput" class="flow-text">START SPEAKING TO SEE THE LIVE TRANSCRIPT.</div>
-        <div id="rightOutput" class="flow-text">START SPEAKING TO SEE THE SECOND TRANSCRIPT.</div>
+        <div id="leftOutput" class="flow-text"></div>
+        <div id="rightOutput" class="flow-text"></div>
       </section>
 
       <section id="designStage" class="design-stage" hidden>

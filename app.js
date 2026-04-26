@@ -124,8 +124,8 @@ function renderCanvas(positiveText, negativeText) {
   const colWidth = (canvas.width - gutter * 3) / 2;
   const top = 55;
 
-  const leftText = formatDisplayText(positiveText, 'PRESS START AND BEGIN SPEAKING.');
-  const rightText = formatDisplayText(negativeText, 'START SPEAKING TO SEE THE SECOND TRANSCRIPT.');
+  const leftText = formatDisplayText(positiveText, '');
+  const rightText = formatDisplayText(negativeText, '');
 
   drawWrappedText(
     leftText,
@@ -151,14 +151,11 @@ function renderCanvas(positiveText, negativeText) {
 function updateOutputs() {
   const fullTranscript = `${finalizedTranscript} ${interimTranscript}`.trim();
 
-  const positiveText = fullTranscript || 'Press Start and begin speaking.';
+  const positiveText = fullTranscript || '';
   const negativeText = fullTranscript ? buildNegativeText(fullTranscript) : '';
 
-  leftOutput.textContent = formatDisplayText(positiveText, 'Press Start and begin speaking.');
-  rightOutput.textContent = formatDisplayText(
-    negativeText,
-    'Start speaking to see the second transcript.'
-  );
+  leftOutput.textContent = formatDisplayText(positiveText, '');
+  rightOutput.textContent = formatDisplayText(negativeText, '');
 
   lastNegativeText = negativeText;
 
@@ -214,6 +211,11 @@ function ensureDesignReady() {
   return true;
 }
 
+function advanceQuestion() {
+  questionIndex = (questionIndex + 1) % promptQuestions.length;
+  mainQuestion.textContent = promptQuestions[questionIndex];
+}
+
 function downloadBlob(blob, fileName) {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
@@ -253,6 +255,7 @@ function saveDesign(side) {
     const fileName = side === 'left' ? 'left-design.png' : 'right-design.png';
     downloadBlob(blob, fileName);
   }, 'image/png');
+  advanceQuestion();
 }
 
 function saveTranscription(side) {
@@ -269,6 +272,7 @@ function saveTranscription(side) {
 
   const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
   downloadBlob(blob, fileName);
+  advanceQuestion();
 }
 
 function stopRecognition() {
@@ -332,8 +336,6 @@ function startRecognition() {
       mainQuestion.style.opacity = '1';
       if (stopRequested) {
         hasStoppedAtLeastOnce = true;
-        questionIndex = (questionIndex + 1) % promptQuestions.length;
-        mainQuestion.textContent = promptQuestions[questionIndex];
       } else {
         hasStoppedAtLeastOnce = false;
       }
