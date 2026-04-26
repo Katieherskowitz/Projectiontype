@@ -68,6 +68,10 @@ function buildNegativeText(text) {
   return replaceFromMap(text, toNegativeMap);
 }
 
+function formatDisplayText(text, fallback) {
+  return (text || fallback).toUpperCase();
+}
+
 function drawWrappedText(text, x, y, maxWidth, lineHeight, color, font) {
   ctx.fillStyle = color;
   ctx.font = font;
@@ -95,63 +99,49 @@ function renderCanvas(positiveText, negativeText) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-  gradient.addColorStop(0, '#0f1428');
-  gradient.addColorStop(1, '#080910');
+  gradient.addColorStop(0, '#5b030a');
+  gradient.addColorStop(1, '#120103');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const gutter = 40;
   const colWidth = (canvas.width - gutter * 3) / 2;
-  const top = 80;
+  const top = 40;
 
-  ctx.fillStyle = 'rgba(17, 23, 43, 0.9)';
-  ctx.fillRect(gutter, top, colWidth, canvas.height - top - 50);
-  ctx.fillRect(gutter * 2 + colWidth, top, colWidth, canvas.height - top - 50);
-
-  ctx.strokeStyle = '#2f3e72';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(gutter, top, colWidth, canvas.height - top - 50);
-  ctx.strokeRect(gutter * 2 + colWidth, top, colWidth, canvas.height - top - 50);
-
-  ctx.font = '700 34px Inter, sans-serif';
-  ctx.fillStyle = '#7ee9bf';
-  ctx.fillText('Positive Mode', gutter + 24, top + 48);
-
-  ctx.fillStyle = '#ff8fa5';
-  ctx.fillText('Negative Mode', gutter * 2 + colWidth + 24, top + 48);
+  const leftText = formatDisplayText(positiveText, 'Waiting for speech...');
+  const rightText = formatDisplayText(negativeText, 'Waiting for altered speech...');
 
   drawWrappedText(
-    positiveText || 'Waiting for speech...',
+    leftText,
     gutter + 24,
-    top + 95,
+    top + 30,
     colWidth - 48,
-    35,
-    '#f2f4ff',
-    '500 30px Inter, sans-serif'
+    44,
+    '#ffffff',
+    '800 36px Inter, sans-serif'
   );
 
   drawWrappedText(
-    negativeText || 'Waiting for altered speech...',
+    rightText,
     gutter * 2 + colWidth + 24,
-    top + 95,
+    top + 30,
     colWidth - 48,
-    35,
-    '#ffe7eb',
-    '500 30px Inter, sans-serif'
+    44,
+    '#ffffff',
+    '800 36px Inter, sans-serif'
   );
 }
 
 function updateOutputs() {
   const fullTranscript = `${finalizedTranscript} ${interimTranscript}`.trim();
 
-  const exactText = fullTranscript || 'Press Start and begin speaking.';
-  const positiveText = exactText;
+  const positiveText = fullTranscript || 'Press Start and begin speaking.';
   const negativeText = fullTranscript
     ? buildNegativeText(fullTranscript)
     : 'Your altered output appears here.';
 
-  positiveOutput.textContent = positiveText;
-  negativeOutput.textContent = negativeText;
+  positiveOutput.textContent = formatDisplayText(positiveText, 'Press Start and begin speaking.');
+  negativeOutput.textContent = formatDisplayText(negativeText, 'Your altered output appears here.');
 
   lastNegativeText = negativeText;
 
@@ -187,11 +177,11 @@ function saveTranscription() {
   const lines = [
     '=== Transcription Export ===',
     '',
-    '[Positive Mode]',
+    '[Left Side]',
     positiveOutput.textContent,
     '',
-    '[Negative Mode]',
-    lastNegativeText,
+    '[Right Side]',
+    formatDisplayText(lastNegativeText, ''),
     '',
     '[Raw Transcript]',
     cleanTranscript,
