@@ -24,7 +24,6 @@ let isRecording = false;
 let finalizedTranscript = '';
 let interimTranscript = '';
 let lastNegativeText = '';
-let lastPositiveText = '';
 let canGenerateDesign = false;
 let designReady = false;
 let hasStoppedAtLeastOnce = false;
@@ -47,7 +46,7 @@ const toNegativeMap = {
   happy: 'miserable',
   joy: 'misery',
   joyful: 'grim',
-  good: 'awful',
+  good: 'bad',
   great: 'terrible',
   amazing: 'horrible',
   success: 'failure',
@@ -64,55 +63,6 @@ const toNegativeMap = {
   trust: 'doubt',
   kind: 'cruel'
 };
-
-const toPositiveMap = {
-  hate: 'love',
-  hated: 'loved',
-  sad: 'hopeful',
-  miserable: 'joyful',
-  misery: 'joy',
-  grim: 'bright',
-  awful: 'great',
-  terrible: 'wonderful',
-  horrible: 'amazing',
-  failure: 'success',
-  broken: 'strong',
-  doomed: 'safe',
-  chaos: 'peace',
-  anxious: 'calm',
-  despair: 'hope',
-  hopeless: 'hopeful',
-  bleak: 'bright',
-  ruin: 'build',
-  collapse: 'rise',
-  damage: 'improve',
-  doubt: 'trust',
-  cruel: 'kind',
-  despise: 'love',
-  resent: 'appreciate'
-};
-
-const negativeFallbackWords = [
-  'grim',
-  'broken',
-  'bleak',
-  'harsh',
-  'hollow',
-  'cold',
-  'doomed',
-  'bitter'
-];
-
-const positiveFallbackWords = [
-  'bright',
-  'hopeful',
-  'strong',
-  'warm',
-  'steady',
-  'kind',
-  'uplifted',
-  'alive'
-];
 
 function setStatus(text) {
   statusText.textContent = text.toUpperCase();
@@ -135,34 +85,8 @@ function replaceFromMap(input, map) {
   });
 }
 
-function hashWord(word) {
-  let hash = 0;
-  for (let i = 0; i < word.length; i += 1) {
-    hash = (hash * 31 + word.charCodeAt(i)) >>> 0;
-  }
-  return hash;
-}
-
-function getFallbackWord(sourceWord, pool) {
-  const idx = hashWord(sourceWord.toLowerCase()) % pool.length;
-  return pool[idx];
-}
-
-function transformEveryWord(input, map, fallbackPool) {
-  return input.replace(/\b[a-z']+\b/gi, (word) => {
-    const mapped = map[word.toLowerCase()] || getFallbackWord(word, fallbackPool);
-    return preserveCase(word, mapped);
-  });
-}
-
 function buildNegativeText(text) {
-  const mapped = transformEveryWord(text, toNegativeMap, negativeFallbackWords).trim();
-  if (!mapped) return '';
-  return mapped;
-}
-
-function buildPositiveText(text) {
-  const mapped = transformEveryWord(text, toPositiveMap, positiveFallbackWords).trim();
+  const mapped = replaceFromMap(text, toNegativeMap).trim();
   if (!mapped) return '';
   return mapped;
 }
@@ -232,13 +156,12 @@ function updateOutputs() {
   const fullTranscript = `${finalizedTranscript} ${interimTranscript}`.trim();
 
   const negativeText = fullTranscript ? buildNegativeText(fullTranscript) : '';
-  const positiveText = fullTranscript ? buildPositiveText(fullTranscript) : '';
+  const exactText = fullTranscript || '';
 
-  leftOutput.textContent = formatDisplayText(negativeText, '');
-  rightOutput.textContent = formatDisplayText(positiveText, '');
+  leftOutput.textContent = negativeText;
+  rightOutput.textContent = exactText;
 
   lastNegativeText = negativeText;
-  lastPositiveText = positiveText;
 
   const hasSpeech = Boolean(fullTranscript);
   saveDesignLeftBtn.disabled = !hasSpeech || isRecording;
@@ -293,7 +216,7 @@ function updateControlsVisibility() {
 function ensureDesignReady() {
   if (!canGenerateDesign) return false;
   if (!designReady) {
-    renderCanvas(finalizedTranscript.trim(), lastNegativeText);
+    renderCanvas(lastNegativeText, finalizedTranscript.trim());
     designReady = true;
   }
   designStage.hidden = false;
@@ -337,7 +260,7 @@ function saveDesign(side) {
   if (side === 'left') {
     renderSingleSideDesign(lastNegativeText);
   } else {
-    renderSingleSideDesign(lastPositiveText);
+    renderSingleSideDesign(finalizedTranscript.trim());
   }
   canvas.toBlob((blob) => {
     if (!blob) return;
@@ -354,9 +277,7 @@ function saveTranscription(side) {
 
   const isLeft = side === 'left';
   const sectionTitle = isLeft ? '[Left Side]' : '[Right Side]';
-  const sectionText = isLeft
-    ? formatDisplayText(lastNegativeText, '')
-    : formatDisplayText(lastPositiveText, '');
+  const sectionText = isLeft ? lastNegativeText : cleanTranscript;
   const fileName = isLeft ? 'left-transcription.txt' : 'right-transcription.txt';
 
   const lines = ['=== Transcription Export ===', '', sectionTitle, sectionText, ''];
@@ -389,7 +310,6 @@ function startRecognition() {
       finalizedTranscript = '';
       interimTranscript = '';
       lastNegativeText = '';
-      lastPositiveText = '';
       canGenerateDesign = false;
       designReady = false;
       hasStoppedAtLeastOnce = false;
