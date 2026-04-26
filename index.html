@@ -27,16 +27,24 @@
           disabled
           hidden
         ></button>
-        <button id="saveDesignBtn" class="rail-btn" type="button" disabled hidden>Save Design</button>
-        <button id="saveTranscriptBtn" class="rail-btn" type="button" disabled hidden>
-          Save Transcript
+        <button id="saveLeftDesignBtn" class="rail-btn" type="button" disabled hidden>
+          Save Left Design
+        </button>
+        <button id="saveRightDesignBtn" class="rail-btn" type="button" disabled hidden>
+          Save Right Design
+        </button>
+        <button id="saveLeftTranscriptBtn" class="rail-btn" type="button" disabled hidden>
+          Save Left Transcript
+        </button>
+        <button id="saveRightTranscriptBtn" class="rail-btn" type="button" disabled hidden>
+          Save Right Transcript
         </button>
         <p class="sr-only" aria-live="polite"><span id="statusText">IDLE</span></p>
       </section>
 
       <section class="flow-columns" aria-label="Two flowing transcript sides">
         <div id="leftOutput" class="flow-text">START SPEAKING TO SEE THE LIVE TRANSCRIPT.</div>
-        <div id="rightOutput" class="flow-text">THE ALTERED TRANSCRIPT APPEARS HERE.</div>
+        <div id="rightOutput" class="flow-text">START SPEAKING TO SEE THE SECOND TRANSCRIPT.</div>
       </section>
 
       <section id="designStage" class="design-stage" hidden>

@@ -94,12 +94,15 @@ body {
 }
 
 .rail-btn {
-  min-height: 2.4rem;
-  min-width: 4.4rem;
+  min-height: 2.2rem;
+  min-width: 6.7rem;
   padding: 0.5rem 0.75rem;
   background: #ffffff;
   color: var(--accent);
   border-color: var(--accent);
+  font-size: 0.76rem;
+  line-height: 1.1;
+  text-transform: uppercase;
 }
 
 .sr-only {
@@ -127,14 +130,6 @@ body {
 }
 
 .control-rail.is-recording #stopBtn {
-  display: inline-flex;
-}
-
-.control-rail .rail-btn {
-  display: none;
-}
-
-.control-rail.can-save .rail-btn {
   display: inline-flex;
 }
 
