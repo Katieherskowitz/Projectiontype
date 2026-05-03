@@ -104,7 +104,7 @@ body {
   position: fixed;
   bottom: 1.35rem;
   display: grid;
-  gap: 0.95rem;
+  gap: 0.75rem;
   z-index: 11;
 }
 
@@ -116,17 +116,19 @@ body {
   right: 1.1rem;
 }
 
-.save-dot {
+.save-item {
+  display: block;
+}
+
+.save-spot {
   border: 1px solid var(--accent);
   background: #ffffff;
   color: var(--accent);
-  border-radius: 50%;
-  width: 2.75rem;
-  height: 2.75rem;
-  min-width: 2.75rem;
-  min-height: 2.75rem;
-  padding: 0.45rem;
-  font-size: 0.56rem;
+  border-radius: 999px;
+  min-width: 8.6rem;
+  min-height: 2.3rem;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.72rem;
   line-height: 1.1;
   font-weight: 700;
   text-transform: uppercase;
@@ -138,46 +140,12 @@ body {
   transition: 0.2s ease;
 }
 
-.save-icon {
-  width: 1.05rem;
-  height: 1.05rem;
-  display: block;
-  fill: currentColor;
-}
-
-.save-item {
-  display: grid;
-  grid-template-columns: auto auto;
-  align-items: center;
-  column-gap: 0.45rem;
-}
-
-.left-save-rail .save-item {
-  justify-items: start;
-}
-
-.right-save-rail .save-item {
-  justify-items: end;
-}
-
-.save-label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--accent);
-  letter-spacing: 0.02em;
-}
-
-.right-save-rail .save-label {
-  order: -1;
-}
-
-.save-dot:hover:not(:disabled) {
+.save-spot:hover:not(:disabled) {
   transform: translateY(-1px);
   background: #fff4f4;
 }
 
-.save-dot:disabled {
+.save-spot:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
@@ -275,13 +243,8 @@ canvas {
     right: auto;
   }
 
-  .save-item {
-    grid-template-columns: auto;
-    row-gap: 0.2rem;
-  }
-
-  .right-save-rail .save-label {
-    order: 0;
+  .save-spot {
+    min-width: 7.4rem;
   }
 
   .flow-columns {
