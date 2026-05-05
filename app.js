@@ -180,7 +180,7 @@ function drawWrappedText(text, x, y, maxWidth, lineHeight, color, font) {
 function renderCanvas(positiveText, negativeText) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const gutter = 40;
@@ -196,7 +196,7 @@ function renderCanvas(positiveText, negativeText) {
     top + 30,
     colWidth - 48,
     44,
-    '#d40000',
+    '#ff2d2d',
     '800 36px Inter, sans-serif'
   );
 
@@ -206,7 +206,7 @@ function renderCanvas(positiveText, negativeText) {
     top + 30,
     colWidth - 48,
     44,
-    '#d40000',
+    '#ff2d2d',
     '800 36px Inter, sans-serif'
   );
 }
@@ -287,7 +287,7 @@ function downloadBlob(blob, fileName) {
 
 function renderSingleSideDesign(text) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   drawWrappedText(
@@ -296,9 +296,36 @@ function renderSingleSideDesign(text) {
     95,
     canvas.width - 112,
     52,
-    '#d40000',
+    '#ff2d2d',
     '800 42px Inter, sans-serif'
   );
+}
+
+function renderTranscriptImage(lines) {
+  const width = 1600;
+  const lineHeight = 52;
+  const padding = 64;
+  const height = Math.max(900, padding * 2 + lines.length * lineHeight);
+
+  const exportCanvas = document.createElement('canvas');
+  exportCanvas.width = width;
+  exportCanvas.height = height;
+  const exportCtx = exportCanvas.getContext('2d');
+  if (!exportCtx) return null;
+
+  exportCtx.fillStyle = '#000000';
+  exportCtx.fillRect(0, 0, width, height);
+
+  exportCtx.fillStyle = '#ff2d2d';
+  exportCtx.font = '800 42px Inter, sans-serif';
+
+  let y = padding;
+  for (const line of lines) {
+    exportCtx.fillText(line || ' ', padding, y);
+    y += lineHeight;
+  }
+
+  return exportCanvas;
 }
 
 function saveDesign(side) {
@@ -323,12 +350,16 @@ function saveTranscription(side) {
   const isLeft = side === 'left';
   const sectionTitle = isLeft ? '[Left Side]' : '[Right Side]';
   const sectionText = isLeft ? lastNegativeText : cleanTranscript;
-  const fileName = isLeft ? 'left-transcription.txt' : 'right-transcription.txt';
+  const fileName = isLeft ? 'left-transcription.png' : 'right-transcription.png';
 
-  const lines = ['=== Transcription Export ===', '', sectionTitle, sectionText, ''];
+  const lines = [sectionTitle, '', ...sectionText.split('\n')];
+  const exportCanvas = renderTranscriptImage(lines);
+  if (!exportCanvas) return;
 
-  const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
-  downloadBlob(blob, fileName);
+  exportCanvas.toBlob((blob) => {
+    if (!blob) return;
+    downloadBlob(blob, fileName);
+  }, 'image/png');
 }
 
 function stopRecognition() {
