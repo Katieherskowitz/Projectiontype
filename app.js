@@ -233,6 +233,12 @@ function updateOutputs() {
   saveDesignRightBtn.disabled = !hasSpeech || isRecording;
   saveTranscriptLeftBtn.disabled = !hasSpeech || isRecording;
   saveTranscriptRightBtn.disabled = !hasSpeech || isRecording;
+
+  if (isRecording) {
+    // Follow incoming speech only while user is actively recording.
+    leftOutput.scrollTop = leftOutput.scrollHeight;
+    rightOutput.scrollTop = rightOutput.scrollHeight;
+  }
 }
 
 function updateControlsVisibility() {
