@@ -121,33 +121,29 @@ body {
 }
 
 .save-spot {
-  border: 1px solid var(--accent);
-  background: #ffffff;
+  border: 0;
+  background: transparent;
   color: var(--accent);
-  border-radius: 999px;
-  min-width: 8.6rem;
-  min-height: 2.3rem;
-  padding: 0.45rem 0.9rem;
-  font-size: 0.72rem;
+  min-width: 0;
+  min-height: 0;
+  padding: 0.1rem 0;
+  font-size: 0.82rem;
   line-height: 1.1;
   font-weight: 700;
-  text-transform: uppercase;
-  text-align: center;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  text-transform: none;
+  text-align: left;
+  display: inline-block;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .save-spot:hover:not(:disabled) {
   transform: translateY(-1px);
-  background: #fff4f4;
+  text-decoration: underline;
 }
 
 .save-spot:disabled {
   opacity: 0.35;
-  cursor: not-allowed;
 }
 
 .sr-only {
@@ -241,10 +237,6 @@ canvas {
   .right-save-rail {
     left: auto;
     right: auto;
-  }
-
-  .save-spot {
-    min-width: 7.4rem;
   }
 
   .flow-columns {
