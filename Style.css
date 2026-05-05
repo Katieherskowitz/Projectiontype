@@ -1,9 +1,9 @@
 :root {
-  color-scheme: light;
-  --bg: #ffffff;
-  --text: #c10000;
-  --muted: #b93a3a;
-  --accent: #c10000;
+  color-scheme: dark;
+  --bg: #000000;
+  --text: #ff2d2d;
+  --muted: #ff5b5b;
+  --accent: #ff2d2d;
 }
 
 * {
@@ -29,14 +29,6 @@ body {
   padding-bottom: 7.5rem;
 }
 
-.main-question {
-  margin: 0 0 0.35rem 0;
-  font-size: clamp(1.2rem, 2.7vw, 2rem);
-  font-weight: 800;
-  color: var(--accent);
-  text-align: center;
-}
-
 .control-rail {
   position: fixed;
   bottom: 1.25rem;
@@ -49,7 +41,7 @@ body {
 
 .control-dot {
   border: 1px solid var(--accent);
-  background: #fff;
+  background: #000;
   color: var(--accent);
   border-radius: 999px;
   padding: 0.6rem 0.8rem;
@@ -66,7 +58,7 @@ body {
 
 .control-dot:hover:not(:disabled) {
   transform: translateY(-1px);
-  background: #fff4f4;
+  background: #150606;
 }
 
 .control-dot:disabled {
@@ -185,15 +177,15 @@ body {
   border: 0;
   border-radius: 0;
   padding: 0.25rem;
-  line-height: 1.38;
+  line-height: 1.22;
   color: var(--accent);
   font-weight: 800;
   text-transform: uppercase;
-  font-size: clamp(1.05rem, 1.9vw, 1.6rem);
+  font-size: clamp(1.8rem, 4.8vw, 4rem);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   width: 100%;
-  min-height: 55vh;
+  min-height: 70vh;
   text-align: left;
 }
 

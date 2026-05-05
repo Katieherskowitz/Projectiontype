@@ -7,7 +7,6 @@ const saveTranscriptRightBtn = document.getElementById('saveRightTranscriptBtn')
 const leftOutput = document.getElementById('leftOutput');
 const rightOutput = document.getElementById('rightOutput');
 const statusText = document.getElementById('statusText');
-const mainQuestion = document.getElementById('mainQuestion');
 const designStage = document.getElementById('designStage');
 const controlRail = document.getElementById('controlRail');
 const canvas = document.getElementById('projectionCanvas');
@@ -23,16 +22,7 @@ let lastNegativeText = '';
 let canGenerateDesign = false;
 let designReady = false;
 let hasStoppedAtLeastOnce = false;
-let questionIndex = 0;
 let stopRequested = false;
-
-const promptQuestions = [
-  'Did anything today make me question or reinforce how I see myself? Why did it have that effect?',
-  'What made you feel something today and why.',
-  "What's something happening in the world today that caught my attention? Why did it stand out?",
-  'Did anything in the world today challenge or support what I believe in? How?',
-  'What moment today stayed with me the longest, and why did it keep echoing in my mind?'
-];
 
 const toNegativeMap = {
   love: 'despise',
@@ -135,11 +125,29 @@ function replaceFromMap(input, map) {
   });
 }
 
+function distortToken(word) {
+  const chars = word.split('');
+  const swapped = chars.map((char, index) => {
+    if (index % 2 === 1 && /[a-z]/i.test(char)) {
+      const isUpper = char === char.toUpperCase();
+      const replacement = index % 4 === 1 ? 'x' : 'z';
+      return isUpper ? replacement.toUpperCase() : replacement;
+    }
+    return char;
+  });
+  return swapped.join('');
+}
+
 function buildNegativeText(text) {
-  // Keep sentence structure intact while applying targeted negative substitutions.
-  const mapped = replaceFromMap(text, toNegativeMap).trim();
-  if (!mapped) return '';
-  return mapped;
+  // Intensify left-side transformation by mutating every other word after mapping.
+  const mapped = replaceFromMap(text, toNegativeMap);
+  let wordIndex = 0;
+  const intensified = mapped.replace(/\b[a-z']+\b/gi, (word) => {
+    const transformed = wordIndex % 2 === 1 ? distortToken(word) : word;
+    wordIndex += 1;
+    return transformed;
+  });
+  return intensified.trim();
 }
 
 function formatDisplayText(text, fallback) {
@@ -266,11 +274,6 @@ function ensureDesignReady() {
   return true;
 }
 
-function advanceQuestion() {
-  questionIndex = (questionIndex + 1) % promptQuestions.length;
-  mainQuestion.textContent = promptQuestions[questionIndex];
-}
-
 function downloadBlob(blob, fileName) {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
@@ -310,7 +313,6 @@ function saveDesign(side) {
     const fileName = side === 'left' ? 'left-design.png' : 'right-design.png';
     downloadBlob(blob, fileName);
   }, 'image/png');
-  advanceQuestion();
 }
 
 function saveTranscription(side) {
@@ -327,7 +329,6 @@ function saveTranscription(side) {
 
   const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
   downloadBlob(blob, fileName);
-  advanceQuestion();
 }
 
 function stopRecognition() {
@@ -358,7 +359,6 @@ function startRecognition() {
       hasStoppedAtLeastOnce = false;
       stopRequested = false;
       setStatus('Listening...');
-      mainQuestion.style.opacity = '0.7';
       designStage.hidden = true;
       updateOutputs();
       updateControlsVisibility();
@@ -388,7 +388,6 @@ function startRecognition() {
       interimTranscript = '';
       canGenerateDesign = true;
       setStatus('Stopped');
-      mainQuestion.style.opacity = '1';
       if (stopRequested) {
         hasStoppedAtLeastOnce = true;
       } else {
