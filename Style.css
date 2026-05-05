@@ -43,7 +43,7 @@ body {
   border: 1px solid var(--accent);
   background: #000;
   color: var(--accent);
-  border-radius: 999px;
+  border-radius: 50%;
   padding: 0.6rem 0.8rem;
   font-size: 0.85rem;
   font-weight: 700;
@@ -51,6 +51,8 @@ body {
   transition: 0.2s ease;
   min-width: 2.75rem;
   min-height: 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -78,13 +80,6 @@ body {
   color: transparent;
 }
 
-.control-dot {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-  display: inline-flex;
-}
-
 .mic-icon {
   width: 1.15rem;
   height: 1.15rem;
@@ -106,10 +101,6 @@ body {
 
 .right-save-rail {
   right: 1.1rem;
-}
-
-.save-item {
-  display: block;
 }
 
 .save-spot {
