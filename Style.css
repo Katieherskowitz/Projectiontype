@@ -29,9 +29,19 @@ body {
   padding-bottom: 7.5rem;
 }
 
+.main-question {
+  margin: 0.1rem 0 0.2rem;
+  text-align: center;
+  color: var(--accent);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: clamp(0.9rem, 2.2vw, 1.4rem);
+}
+
 .control-rail {
   position: fixed;
-  bottom: 1.25rem;
+  top: 1.25rem;
   left: 50%;
   transform: translateX(-50%);
   display: grid;
@@ -40,9 +50,9 @@ body {
 }
 
 .control-dot {
-  border: 1px solid var(--accent);
-  background: #000;
-  color: var(--accent);
+  border: 1px solid #d30000;
+  background: #d30000;
+  color: #ffffff;
   border-radius: 50%;
   padding: 0.6rem 0.8rem;
   font-size: 0.85rem;
@@ -60,7 +70,7 @@ body {
 
 .control-dot:hover:not(:disabled) {
   transform: translateY(-1px);
-  background: #150606;
+  background: #a80000;
 }
 
 .control-dot:disabled {
@@ -75,9 +85,9 @@ body {
 }
 
 .stop-dot {
-  background: #000000;
-  border-color: #000000;
-  color: transparent;
+  background: #d30000;
+  border-color: #d30000;
+  color: #ffffff;
 }
 
 .mic-icon {
@@ -189,7 +199,7 @@ canvas {
   height: auto;
   display: block;
   border: 0;
-  background: #fff;
+  background: #000;
 }
 
 @media (max-width: 900px) {
