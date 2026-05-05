@@ -7,6 +7,7 @@ const saveTranscriptRightBtn = document.getElementById('saveRightTranscriptBtn')
 const leftOutput = document.getElementById('leftOutput');
 const rightOutput = document.getElementById('rightOutput');
 const statusText = document.getElementById('statusText');
+const promptText = document.getElementById('promptText');
 const designStage = document.getElementById('designStage');
 const controlRail = document.getElementById('controlRail');
 const canvas = document.getElementById('projectionCanvas');
@@ -23,6 +24,15 @@ let canGenerateDesign = false;
 let designReady = false;
 let hasStoppedAtLeastOnce = false;
 let stopRequested = false;
+let promptIndex = 0;
+
+const prompts = [
+  'WHAT HIT YOU TODAY?',
+  'WHAT STUCK WITH YOU?',
+  'WHAT SHIFTED YOUR MOOD?',
+  'WHAT FELT HEAVY TODAY?',
+  'WHAT WON\'T LEAVE YOU?'
+];
 
 const toNegativeMap = {
   love: 'despise',
@@ -274,6 +284,13 @@ function ensureDesignReady() {
   return true;
 }
 
+function advancePrompt() {
+  promptIndex = (promptIndex + 1) % prompts.length;
+  if (promptText) {
+    promptText.textContent = prompts[promptIndex];
+  }
+}
+
 function downloadBlob(blob, fileName) {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
@@ -366,6 +383,7 @@ function stopRecognition() {
   if (!recognition || !isRecording) return;
   stopRequested = true;
   recognition.stop();
+  advancePrompt();
 }
 
 function startRecognition() {

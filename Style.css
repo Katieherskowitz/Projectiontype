@@ -29,6 +29,16 @@ body {
   padding-bottom: 7.5rem;
 }
 
+.main-question {
+  margin: 0.1rem 0 0.2rem;
+  text-align: center;
+  color: var(--accent);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: clamp(0.9rem, 2.2vw, 1.4rem);
+}
+
 .control-rail {
   position: fixed;
   top: 1.25rem;
