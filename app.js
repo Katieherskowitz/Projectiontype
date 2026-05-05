@@ -27,11 +27,9 @@ let stopRequested = false;
 let promptIndex = 0;
 
 const prompts = [
-  'WHAT HIT YOU TODAY?',
-  'WHAT STUCK WITH YOU?',
-  'WHAT SHIFTED YOUR MOOD?',
-  'WHAT FELT HEAVY TODAY?',
-  'WHAT WON\'T LEAVE YOU?'
+  'What did you love most about typesetting?',
+  'What do you love most about this school?',
+  'What made you feel something today and why?'
 ];
 
 const toNegativeMap = {
@@ -136,24 +134,22 @@ function replaceFromMap(input, map) {
 }
 
 function distortToken(word) {
+  if (word.length < 5) return word;
   const chars = word.split('');
-  const swapped = chars.map((char, index) => {
-    if (index % 2 === 1 && /[a-z]/i.test(char)) {
-      const isUpper = char === char.toUpperCase();
-      const replacement = index % 4 === 1 ? 'x' : 'z';
-      return isUpper ? replacement.toUpperCase() : replacement;
-    }
-    return char;
-  });
-  return swapped.join('');
+  const pivot = Math.floor(word.length / 2);
+  const char = chars[pivot];
+  if (!/[a-z]/i.test(char)) return word;
+  const isUpper = char === char.toUpperCase();
+  chars[pivot] = isUpper ? 'X' : 'x';
+  return chars.join('');
 }
 
 function buildNegativeText(text) {
-  // Intensify left-side transformation by mutating every other word after mapping.
+  // Keep the rewrite dramatic but slightly less aggressive.
   const mapped = replaceFromMap(text, toNegativeMap);
   let wordIndex = 0;
   const intensified = mapped.replace(/\b[a-z']+\b/gi, (word) => {
-    const transformed = wordIndex % 2 === 1 ? distortToken(word) : word;
+    const transformed = wordIndex % 3 === 2 ? distortToken(word) : word;
     wordIndex += 1;
     return transformed;
   });
